@@ -182,10 +182,9 @@ function update(dt) {
 
   if (pointerX !== null) {
     announceStart();
-    const target = pointerX;
-    const diff = target - cat.x;
-    const maxMove = CAT_SPEED * dt;
-    cat.x += Math.max(-maxMove, Math.min(maxMove, diff));
+    // Direct 1:1 tracking: the cat lives under the finger. This feels far
+    // better on touch than smoothing toward the pointer (which feels laggy).
+    cat.x = pointerX;
   }
 
   cat.x = Math.max(cat.w / 2, Math.min(LOGICAL_WIDTH - cat.w / 2, cat.x));
@@ -315,9 +314,11 @@ function attachInput() {
     pointerX = null;
   };
 
+  // Note: no `pointerleave` listener — pointer capture keeps events flowing
+  // to the canvas even when the finger drags outside its bounds, and ending
+  // the drag on leave makes touch input feel broken.
   canvas.addEventListener('pointerup', endPointer);
   canvas.addEventListener('pointercancel', endPointer);
-  canvas.addEventListener('pointerleave', endPointer);
 }
 
 startButton.addEventListener('click', startGame);
