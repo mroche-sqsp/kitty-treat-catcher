@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Kitty Treat Catcher</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='52' font-size='52'%3E%F0%9F%90%B1%3C/text%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="stage">
+      <canvas id="game" width="960" height="540" aria-label="Kitty Treat Catcher game"></canvas>
+      <div class="hud" id="hud">
+        <span class="hud__score" id="score">0 / 10</span>
+        <span class="hud__timer" id="timer">0.0s</span>
+      </div>
+
+      <div class="screen" id="startScreen">
+        <div class="screen__card">
+          <h1 class="screen__title">Kitty Treat Catcher</h1>
+          <p class="screen__body">
+            Catch <strong>10 fish</strong> to win. Move with
+            <kbd>&larr;</kbd> <kbd>&rarr;</kbd> or drag on touch.
+          </p>
+          <p class="screen__body screen__body--subtle">Dodge the yarn balls, they're worth nothing.</p>
+          <button class="button" id="startButton" type="button">Start</button>
+        </div>
+      </div>
+
+      <div class="screen" id="winScreen" hidden>
+        <div class="screen__card">
+          <h1 class="screen__title">You won!</h1>
+          <p class="screen__body" id="winMessage">Great catches.</p>
+          <div class="screen__code" id="winDiscount" hidden></div>
+          <button class="button" id="restartButton" type="button">Play again</button>
+        </div>
+      </div>
+    </main>
+    <script type="module" src="./game.js"></script>
+  </body>
+</html>
