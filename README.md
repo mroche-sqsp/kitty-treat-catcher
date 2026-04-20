@@ -11,25 +11,26 @@ Wins in ~30–45 seconds. Always beatable by design.
 ## postMessage protocol
 
 When embedded in an iframe, the game posts messages to `window.parent` so a
-host page can react to gameplay events (e.g. reveal a discount code on win):
+host page can react to gameplay events (e.g. reveal a reward code on win):
 
 ```ts
 interface GameMessage {
-  type: 'GAME_STARTED' | 'GAME_WON' | 'GAME_OVER';
+  type: 'STARTED' | 'GOAL_REACHED' | 'ENDED';
   score?: number;
 }
 ```
 
-It sends `GAME_STARTED` on the first player input and `GAME_WON` when the
-player catches 10 fish. It never sends `GAME_OVER` (there's no fail state).
+It sends `STARTED` on the first player input and `GOAL_REACHED` when the
+player catches 10 fish. It never sends `ENDED` (there's no fail state).
 
 When run standalone (no parent frame), the messages are no-ops.
 
 ## Query parameters
 
-- `?discountCode=PETS10` — displayed inside the in-game win card, useful for
-  standalone embeds where the host page doesn't render its own discount
-  overlay.
+- `?rewardCode=PETS10` — displayed inside the in-game win card, useful for
+  standalone embeds where the host page doesn't render its own reward
+  overlay. The legacy `?discountCode=PETS10` is also accepted for backward
+  compatibility with older host pages.
 
 ## Local testing
 
@@ -41,7 +42,7 @@ python3 -m http.server 8000 --bind 127.0.0.1
 # or: npx serve .
 ```
 
-Open <http://127.0.0.1:8000/?discountCode=PETS10>. Prefer `127.0.0.1` over
+Open <http://127.0.0.1:8000/?rewardCode=PETS10>. Prefer `127.0.0.1` over
 `localhost` — on some macOS setups `localhost` resolves to IPv6 first and
 hangs if the server only bound to IPv4.
 

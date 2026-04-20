@@ -4,13 +4,14 @@
  * via iframe. Posts the following messages to `window.parent` so the host
  * page can react to gameplay events:
  *
- *   { type: 'GAME_STARTED' }   - first player input
- *   { type: 'GAME_WON', score } - hit the treat goal
- *   { type: 'GAME_OVER', score } - (unused here - the game is always winnable)
+ *   { type: 'STARTED' }              - first player input
+ *   { type: 'GOAL_REACHED', score }  - hit the treat goal
+ *   { type: 'ENDED', score }         - (unused here - the game is always winnable)
  *
- * Accepts an optional `?discountCode=XYZ` query parameter which is displayed
+ * Accepts an optional `?rewardCode=XYZ` query parameter which is displayed
  * on the in-game win screen (useful for standalone embeds where the host
- * page does not render its own discount overlay).
+ * page does not render its own reward overlay). For backward compatibility
+ * with older host pages, `?discountCode=XYZ` is also accepted.
  */
 
 const LOGICAL_WIDTH = 960;
@@ -30,11 +31,13 @@ const hudTimer = /** @type {HTMLElement} */ (document.getElementById('timer'));
 const startScreen = /** @type {HTMLElement} */ (document.getElementById('startScreen'));
 const winScreen = /** @type {HTMLElement} */ (document.getElementById('winScreen'));
 const winMessage = /** @type {HTMLElement} */ (document.getElementById('winMessage'));
-const winDiscount = /** @type {HTMLElement} */ (document.getElementById('winDiscount'));
+const winReward = /** @type {HTMLElement} */ (document.getElementById('winReward'));
 const startButton = /** @type {HTMLButtonElement} */ (document.getElementById('startButton'));
 const restartButton = /** @type {HTMLButtonElement} */ (document.getElementById('restartButton'));
 
-const discountCode = new URLSearchParams(window.location.search).get('discountCode') || '';
+const params = new URLSearchParams(window.location.search);
+// Prefer the new `?rewardCode=` query param; fall back to legacy `?discountCode=`.
+const rewardCode = params.get('rewardCode') || params.get('discountCode') || '';
 
 /** @type {'idle' | 'playing' | 'won'} */
 let state = 'idle';
@@ -133,7 +136,7 @@ function announceStart() {
     return;
   }
   hasAnnouncedStart = true;
-  sendMessage('GAME_STARTED');
+  sendMessage('STARTED');
 }
 
 function handleCatch(faller) {
@@ -149,14 +152,14 @@ function handleCatch(faller) {
 function win() {
   state = 'won';
   winMessage.textContent = `You caught ${TREAT_GOAL} fish in ${elapsed.toFixed(1)} seconds.`;
-  if (discountCode) {
-    winDiscount.textContent = discountCode;
-    winDiscount.hidden = false;
+  if (rewardCode) {
+    winReward.textContent = rewardCode;
+    winReward.hidden = false;
   } else {
-    winDiscount.hidden = true;
+    winReward.hidden = true;
   }
   winScreen.hidden = false;
-  sendMessage('GAME_WON', { score });
+  sendMessage('GOAL_REACHED', { score });
 }
 
 function startGame() {
@@ -328,6 +331,6 @@ window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 attachInput();
 
-if (discountCode) {
-  winMessage.textContent = `Win to reveal your discount code.`;
+if (rewardCode) {
+  winMessage.textContent = `Win to reveal your reward code.`;
 }
